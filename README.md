@@ -1,12 +1,26 @@
 # Casual Cosmos
 
-[!WARNING]
+[! WARNING]
 This project is in early development. Many features mentioned here
-have **not** been developed (yet). Also, expect breaking changes!
+have **not** been developed (yet). Also, expect breaking changes,
+especially due to the current dependencies!
 **A Contributions guide and the Code of Conduct is a WIP, so please wait to submit
 pull requests.**
 
 Welcome to Casual Cosmos, a game engine dedicated to custom casual games!
+
+## Motivation
+
+For a longer excerpt, see the FAQ.
+
+In short, casual games on desktop were nice, self-contained
+packages. They are nice ways to pass time, and some of them
+introduced unique mechanics and reward systems.
+
+However, mobile games have made the genre less genuine
+and more pay-to-win. They don't push the envelope on
+what the genre _could be_. This is what Casual Cosmos
+aims to do, while actively supporting creative freedom.
 
 ## Frontend
 
@@ -29,11 +43,15 @@ These core features mean several things:
 
 ## Backend
 
+The backend is written with the [Rust language](https://www.rust-lang.org/)
+in the [Bevy engine](https://github.com/bevyengine).
+See the FAQ for an explanation why these tools were chosen (WIP).
+
 ## License
 
 The **frontend language** is licensed under:
 
-- CC0 (LICENSE-CC0 or [https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt](https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt)).
+- CC0 ([LICENSE-CC0](LICENSE-CC0) or [https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt](https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt)).
 
 The **backend (engine)** is dual licensed. Except where noted, you may choose either:
 
