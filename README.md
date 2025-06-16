@@ -1,11 +1,12 @@
 # Casual Cosmos
 
-[! WARNING]
-This project is in early development. Many features mentioned here
-have **not** been developed (yet). Also, expect breaking changes,
-especially due to the current dependencies!
-**A Contributions guide and the Code of Conduct is a WIP, so please wait to submit
-pull requests.**
+> [!WARNING]
+> This project is in early development. Many features mentioned here
+> have **not** been developed (yet). Also, expect breaking changes,
+> especially due to the current dependencies!
+> pull requests.\*\*
+>
+> \*\*A Contributions guide and the Code of Conduct is a WIP, so please wait to submit
 
 Welcome to Casual Cosmos, a game engine dedicated to custom casual games!
 
@@ -43,7 +44,7 @@ These core features mean several things:
 
 ## Backend
 
-The backend is written with the [Rust language](https://www.rust-lang.org/)
+The primary backend is written with the [Rust language](https://www.rust-lang.org/)
 in the [Bevy engine](https://github.com/bevyengine).
 See the FAQ for an explanation why these tools were chosen (WIP).
 
