@@ -10,6 +10,7 @@ _Author: [@oscar-benderstone] (Project Founder)._
 >
 > - [GameTop](https://www.gametop.com/). Please see the terms of service
 >   in order to download games.
+> - Steam™ (Steam Deck™).
 >
 > I **do not** represent **any** of these companies and
 > am **completely independent**.
@@ -31,8 +32,8 @@ It all felt like Flashpoint, playing a role in
 internet archival.
 
 However, one game I tried significantly lagged on Linux
-via Wine, on a _Steam Deck_. (Yes, you heard that right:
-a 2D casual game pushed the fans on the _Steam Deck_).
+via Wine, on a _Steam Deck™_. (Yes, you heard that right:
+a 2D casual game pushed the fans on the _Steam Deck™_)..
 Even if I used a PC, I realized that these games generally
 have clunky UI, are stuck to **only** 32-bit,
 and could suddenly break **without additional support**.

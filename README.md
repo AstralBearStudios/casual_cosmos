@@ -4,15 +4,15 @@
 > This project is in early development. Many features mentioned here
 > have **not** been developed (yet). Also, expect breaking changes,
 > especially due to the current dependencies!
-> pull requests.\*\*
 >
-> \*\*A Contributions guide and the Code of Conduct is a WIP, so please wait to submit
+> \*\*A Contributions guide and the Code of Conduct is a WIP, so please
+> wait to submit pull requests. \*\*
 
 Welcome to Casual Cosmos, a game engine dedicated to custom casual games!
 
 ## Motivation
 
-For a longer excerpt, see the FAQ.
+For a longer excerpt, see the [FAQ](FAQ.md).
 
 In short, casual games on desktop were nice, self-contained
 packages. They are nice ways to pass time, and some of them
