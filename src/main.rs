@@ -38,11 +38,17 @@ fn load_background(
     config: Res<ConfigHandle>,
     // state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
+    asset_server: Res<AssetServer>,
 ) {
     if let Some(config) = assets.get(config.0.id()) {
-        match config.background {
-            Background::Color(color) => commands.insert_resource(ClearColor(color)),
-            // _ => {}
+        match &config.background {
+            Background::Color(color) => commands.insert_resource(ClearColor(*color)),
+            Background::ImagePath(filepath) => {
+                commands.spawn(Sprite {
+                    image: asset_server.load(filepath.filepath.clone()),
+                    ..default()
+                });
+            }
         }
         next_state.set(AppState::MainMenu);
     }

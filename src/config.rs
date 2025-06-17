@@ -1,5 +1,5 @@
+use bevy::asset::AssetPath;
 use bevy::prelude::*;
-use bevy::prelude::{Asset, Color, Handle, Image, Resource, Srgba, TypePath};
 use serde::de::Error;
 use serde::de::{self, VariantAccess};
 use serde::{Deserialize, Deserializer, Serialize, de::Visitor};
@@ -14,10 +14,19 @@ pub struct Config {
 #[derive(Resource)]
 pub struct ConfigHandle(pub Handle<Config>);
 
+// TODO: allow a regular string (without a table
+#[derive(Debug, Deserialize)]
+pub struct TempPath {
+    pub filepath: String,
+}
+
 #[derive(Debug)]
 // #[serde(untagged)]
 pub enum Background {
     Color(Color),
+    // TODO: use AssetPath instead.
+    // Hard to use due to lifetimes...
+    ImagePath(TempPath),
 }
 
 // Adapted from paramagnetic at:
@@ -40,6 +49,7 @@ impl<'de> Visitor<'de> for BackgroundVisitor {
         let mut green: Option<f32> = None;
         let mut blue: Option<f32> = None;
         let mut alpha: Option<f32> = None;
+        let mut filepath: Option<String> = None;
 
         let mut extra: Option<A::Error> = None;
 
@@ -49,12 +59,17 @@ impl<'de> Visitor<'de> for BackgroundVisitor {
                 "green" => green = Some(map.next_value()?),
                 "blue" => blue = Some(map.next_value()?),
                 "alpha" => alpha = Some(map.next_value()?),
+                "filepath" => filepath = Some(map.next_value()?),
                 _ => {
                     extra = Some(A::Error::custom(
                         "invalid key. Must be 'red', 'green', or 'blue'",
                     ))
                 }
             }
+        }
+
+        if let Some(filepath) = filepath {
+            return Ok(Background::ImagePath(TempPath { filepath }));
         }
 
         // TODO: make this cleaner.
