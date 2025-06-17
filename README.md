@@ -25,7 +25,7 @@ aims to do, while actively supporting creative freedom.
 
 ## Frontend
 
-The core config format is written and has four main features:
+The core config format has four main features:
 
 - **Human-readable**, written in [TOML](https://toml.io/en/) with simple
   key and value names. (Currently, the text encoding is UTF-8).
@@ -41,6 +41,8 @@ These core features mean several things:
   or edit the file directly!
 - **Easy to maintain!** No need to worry about old
   or proprietary formats!
+
+See more details in [Spec](./spec/README.md).
 
 ## Backend
 
