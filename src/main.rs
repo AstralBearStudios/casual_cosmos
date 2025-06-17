@@ -1,3 +1,9 @@
+use bevy::prelude::*;
+
 fn main() {
-    println!("Hello, Casual Cosmos!");
+    App::new()
+        // TODO: replace with DefaultPlugins
+        // once loading the Config works.
+        .add_plugins((TaskPoolPlugin { ..default() }, AssetPlugin { ..default() }))
+        .run();
 }
