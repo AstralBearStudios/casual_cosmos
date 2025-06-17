@@ -21,8 +21,11 @@ There are two key resources to consult:
 
 - The [official guide](./GUIDE.md). Best for players
   or people who want to quickly edit the config format.
+  - Included in the game (TBA).
 - The semi-formal [specification](./SPEC.md). This is useful for maintainers
-  of the official program or alternative implementations. (Still handy for boardgames!).
+  of the official program or alternative implementations.
+  (Still handy for boardgames!).
+  - Only available in this repository.
 
 Eventually, both documents will be synced, making
 it easier to maintain and minimize errors.
