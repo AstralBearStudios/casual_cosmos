@@ -20,23 +20,25 @@ fn main() {
         .add_plugins((DefaultPlugins, TomlAssetPlugin::<Config>::new(&[])))
         .insert_state(AppState::Loading)
         .add_systems(Startup, init)
-        .add_systems(Update, load_background.run_if(in_state(AppState::Loading)))
+        .add_systems(Update, load_config.run_if(in_state(AppState::Loading)))
+        // TODO: replace with buttons. We don't want to watch the file every second!
+        .add_systems(Update, load_config.run_if(in_state(AppState::MainMenu)))
         .run();
 }
 
-fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let config = ConfigHandle(asset_server.load("tests/background_color.toml"));
-    commands.insert_resource(config);
-    // commands.insert_resource(ClearColor(Color::srgb(1., 1., 1.)));
+// TODO: replace with String or AssetPath.
+const CONFIG_PATH: &str = "tests/background_color.toml";
 
+fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let config = ConfigHandle(asset_server.load(CONFIG_PATH));
+    commands.insert_resource(config);
     commands.spawn(Camera2d);
 }
 
-fn load_background(
+fn load_config(
     mut commands: Commands,
     assets: ResMut<Assets<Config>>,
     config: Res<ConfigHandle>,
-    // state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
     asset_server: Res<AssetServer>,
 ) {
