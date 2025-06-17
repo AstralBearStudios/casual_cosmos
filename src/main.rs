@@ -2,7 +2,7 @@ mod config;
 
 use bevy::prelude::*;
 use bevy_common_assets::toml::TomlAssetPlugin;
-use config::{Config, ConfigHandle};
+use config::{Background, Config, ConfigHandle};
 
 #[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
 enum AppState {
@@ -39,9 +39,11 @@ fn load_background(
     // state: Res<State<AppState>>,
     mut next_state: ResMut<NextState<AppState>>,
 ) {
-    println!("{:?}", assets.get(config.0.id()));
     if let Some(config) = assets.get(config.0.id()) {
-        commands.insert_resource(ClearColor(Color::Srgba(config.background)));
+        match config.background {
+            Background::Color(color) => commands.insert_resource(ClearColor(color)),
+            // _ => {}
+        }
         next_state.set(AppState::MainMenu);
     }
 }
