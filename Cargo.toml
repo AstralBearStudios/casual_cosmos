@@ -38,7 +38,7 @@ strip = "debuginfo"
 
 [dependencies]
 bevy_color = { version = "0.16.2", features = ["serialize"] }
-bevy_common_assets = "0.13.0"
+bevy_common_assets = { version = "0.13.0", features = ["toml"] }
 log = { version = "*", features = [
   "max_level_debug",
   "release_max_level_warn",

@@ -1,9 +1,47 @@
+mod config;
+
 use bevy::prelude::*;
+use bevy_common_assets::toml::TomlAssetPlugin;
+use config::{Config, ConfigHandle};
+
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash)]
+enum AppState {
+    Loading,
+    MainMenu,
+    // Settings,
+    // ModeSelect,
+    // Editor,
+    // LevelSelect,
+    // Level,
+}
 
 fn main() {
     App::new()
-        // TODO: replace with DefaultPlugins
-        // once loading the Config works.
-        .add_plugins((TaskPoolPlugin { ..default() }, AssetPlugin { ..default() }))
+        .add_plugins((DefaultPlugins, TomlAssetPlugin::<Config>::new(&[])))
+        .insert_state(AppState::Loading)
+        .add_systems(Startup, init)
+        .add_systems(Update, load_background.run_if(in_state(AppState::Loading)))
         .run();
+}
+
+fn init(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let config = ConfigHandle(asset_server.load("tests/background_color.toml"));
+    commands.insert_resource(config);
+    // commands.insert_resource(ClearColor(Color::srgb(1., 1., 1.)));
+
+    commands.spawn(Camera2d);
+}
+
+fn load_background(
+    mut commands: Commands,
+    assets: ResMut<Assets<Config>>,
+    config: Res<ConfigHandle>,
+    // state: Res<State<AppState>>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    println!("{:?}", assets.get(config.0.id()));
+    if let Some(config) = assets.get(config.0.id()) {
+        commands.insert_resource(ClearColor(Color::Srgba(config.background)));
+        next_state.set(AppState::MainMenu);
+    }
 }
