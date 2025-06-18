@@ -1,18 +1,25 @@
-use bevy::asset::AssetPath;
+// use bevy::asset::AssetPath;
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::*;
+use serde::de;
 use serde::de::Error;
-use serde::de::{self, VariantAccess};
 use serde::{Deserialize, Deserializer, Serialize, de::Visitor};
 use std::fmt;
+
+// TODO: replace with String or AssetPath.
+// const CONFIG_PATH: str = "tests/background_color.toml";
+#[derive(AssetCollection, Resource)]
+pub struct ConfigHandle {
+    // #[asset(key = "config")]
+    #[asset(path = "background.toml")]
+    pub inner: Handle<Config>,
+}
 
 #[derive(Deserialize, Asset, TypePath, Debug)]
 pub struct Config {
     // pub background: Srgba,
     pub background: Background,
 }
-
-#[derive(Resource)]
-pub struct ConfigHandle(pub Handle<Config>);
 
 // TODO: allow a regular string (without a table
 #[derive(Debug, Deserialize)]
@@ -72,14 +79,23 @@ impl<'de> Visitor<'de> for BackgroundVisitor {
             return Ok(Background::ImagePath(TempPath { filepath }));
         }
 
+        const COLOR_SIZE: f32 = 256.;
+
         // TODO: make this cleaner.
         // Probably could use a map here?
         match (red, green, blue, alpha, extra) {
-            (Some(red), Some(green), Some(blue), None, None) => {
-                Ok(Background::Color(Color::srgb(red, green, blue)))
-            }
+            (Some(red), Some(green), Some(blue), None, None) => Ok(Background::Color(Color::srgb(
+                red / COLOR_SIZE,
+                green / COLOR_SIZE,
+                blue / COLOR_SIZE,
+            ))),
             (Some(red), Some(green), Some(blue), Some(alpha), None) => {
-                Ok(Background::Color(Color::srgba(red, green, blue, alpha)))
+                Ok(Background::Color(Color::srgba(
+                    red / COLOR_SIZE,
+                    green / COLOR_SIZE,
+                    blue / COLOR_SIZE,
+                    alpha,
+                )))
             }
             (_, _, _, _, Some(error)) => Err(error),
             // TODO: make sure to list all errors!

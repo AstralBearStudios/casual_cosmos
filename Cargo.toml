@@ -37,8 +37,10 @@ strip = "debuginfo"
 
 
 [dependencies]
+bevy_asset_loader = { version = "0.23.0", features = ["2d", "progress_tracking", "standard_dynamic_assets"] }
 bevy_color = { version = "0.16.2", features = ["serialize"] }
 bevy_common_assets = { version = "0.13.0", features = ["toml"] }
+bevy_lunex = "0.4.2"
 log = { version = "*", features = [
   "max_level_debug",
   "release_max_level_warn",
