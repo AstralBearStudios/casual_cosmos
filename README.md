@@ -48,7 +48,7 @@ See more details in [Spec](./spec/README.md).
 
 The primary backend is written with the [Rust language](https://www.rust-lang.org/)
 in the [Bevy engine](https://github.com/bevyengine).
-See the FAQ for an explanation why these tools were chosen (WIP).
+See the FAQ for an explanation on why these tools were chosen (WIP).
 
 ## License
 
@@ -63,3 +63,15 @@ The **backend (engine)** is dual licensed. Except where noted, you may choose ei
 
 (The wording above is adapted from the [Bevy engine](https://github.com/bevyengine),
 a core dependency in this project.)
+
+Currently, two asset folders
+are included in this repository.
+
+- [assets/bevy](./assets/bevy)
+
+  - rpg: CC0 (see [CREDITS.md in bevy](https://github.com/bevyengine/bevy/blob/main/CREDITS.md)).
+    Thank you [Bakudas](https://twitter.com/bakudas), [Gabe Fern](https://twitter.com/_Gabrielfer)
+    and the bevy team!
+
+- [assets/tests](./assets/bevy):
+  - CC0 ([LICENSE-CC0](LICENSE-CC0) or [https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt](https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt))

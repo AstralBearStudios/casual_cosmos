@@ -11,7 +11,7 @@ use std::fmt;
 #[derive(AssetCollection, Resource)]
 pub struct ConfigHandle {
     // #[asset(key = "config")]
-    #[asset(path = "background.toml")]
+    #[asset(path = "tests/background.toml")]
     pub inner: Handle<Config>,
 }
 

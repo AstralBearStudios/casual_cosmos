@@ -1,0 +1,2 @@
+# background = { filepath = "tests/background.jpg" }
+background = { red = 18, green = 7, blue = 52 }
