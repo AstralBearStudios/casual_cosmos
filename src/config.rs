@@ -13,6 +13,10 @@ pub struct ConfigHandle {
     // #[asset(key = "config")]
     #[asset(path = "tests/background.toml")]
     pub inner: Handle<Config>,
+
+    // TEST
+    #[asset(path = "bevy/rpg/chars/gabe/gabe-idle-run.png")]
+    pub worker: Handle<Image>,
 }
 
 #[derive(Deserialize, Asset, TypePath, Debug)]
