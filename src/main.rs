@@ -1,62 +1,25 @@
+mod base;
 mod config;
+mod platform;
 
+use base::AppState;
 use bevy::prelude::*;
-use bevy::winit::{UpdateMode, WinitSettings};
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::toml::TomlAssetPlugin;
 use bevy_lunex::prelude::*;
 use config::{Background, Config, ConfigHandle};
-use std::time::Duration;
-
-// Adapted from:
-// https://github.com/IDEDARY/Bevypunk
-// Under the MIT license
-fn despawn_scene<S: Component>(mut commands: Commands, query: Query<Entity, With<S>>) {
-    for entity in &query {
-        commands.entity(entity).despawn();
-    }
-}
-
-#[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
-enum AppState {
-    #[default]
-    Loading,
-    MainMenu,
-    // Settings,
-    // ModeSelect,
-    // Editor,
-    // LevelSelect,
-    Level,
-}
-
-fn init_refresh_rate(mut winit: ResMut<WinitSettings>) {
-    const FPS: f32 = 60.0;
-    winit.focused_mode = UpdateMode::reactive(Duration::from_secs_f32(1.0 / FPS));
-}
+use platform::PlatformPlugin;
 
 fn main() {
     App::new()
         .add_plugins((
-            // DefaultPlugins.set(AssetPlugin {
-            //     // TODO: find best option to set this.
-            //     // Maybe manually doing this is better?
-            //     // watch_for_changes_override: Some(true),
-            //     ..default()
-            // },),
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "Casual Cosmos".into(),
-                    ..default()
-                }),
-                ..default()
-            }),
+            PlatformPlugin,
             TomlAssetPlugin::<Config>::new(&["toml"]),
             UiLunexPlugins,
         ))
-        .init_state::<AppState>()
         // Adapted from:
         // https://rustunit.com/blog/2025/01-02-bevy-mobile-framerate/
-        .add_systems(Startup, (init_refresh_rate, setup_loading))
+        .add_systems(Startup, setup_loading)
         .add_loading_state(
             LoadingState::new(AppState::Loading)
                 .continue_to_state(AppState::Level)
