@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use bevy::winit::{UpdateMode, WinitSettings};
 use std::time::Duration;
 
-pub struct PlatformPlugin;
-
 use crate::base::AppState;
+
+pub struct PlatformPlugin;
 
 impl Plugin for PlatformPlugin {
     fn build(&self, app: &mut App) {
