@@ -1,5 +1,5 @@
 use crate::base::AppState;
-use crate::config::{Config, ConfigHandle};
+use crate::config::{Background, Config, ConfigHandle};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_common_assets::toml::TomlAssetPlugin;
@@ -52,26 +52,8 @@ fn setup_loading(mut commands: Commands) {
     //     });
 }
 
-#[derive(Component)]
-struct BackgroundTag;
-
-#[derive(Component)]
-struct WorkerTag;
-
-#[derive(Component)]
-struct AnimationIndices {
-    first: usize,
-    last: usize,
-}
-
-#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
-
-#[derive(Component)]
-enum WorkerState {
-    Active,
-    Passive,
-}
+// #[derive(Component)]
+// struct BackgroundTag;
 
 fn setup_config(
     mut commands: Commands,
@@ -86,7 +68,7 @@ fn setup_config(
             Background::Color(color) => commands.insert_resource(ClearColor(*color)),
             Background::ImagePath(filepath) => {
                 commands.spawn((
-                    BackgroundTag,
+                    // BackgroundTag,
                     Sprite {
                         image: asset_server.load(filepath.filepath.clone()),
                         ..default()
@@ -96,33 +78,7 @@ fn setup_config(
         }
     }
 
-    for entity in loading_query.iter() {
-        commands.entity(entity).despawn();
-    }
-
-    // NOTE: this is for testing mechanics
-    //
-    // Adapted from:
-    // https://bevy.org/examples/picking/sprite-picking/
-    let layout = TextureAtlasLayout::from_grid(UVec2::new(24, 24), 7, 1, None, None);
-    let texture_atlas_layout_handle = texture_atlas_layouts.add(layout);
-    // Use only the subset of sprites in the sheet that make up the run animation
-    let animation_indices = AnimationIndices { first: 1, last: 6 };
-    commands
-        .spawn((
-            WorkerTag,
-            WorkerState::Passive,
-            Sprite::from_atlas_image(
-                config.worker.clone(),
-                TextureAtlas {
-                    layout: texture_atlas_layout_handle,
-                    index: animation_indices.first,
-                },
-            ),
-            Transform::from_xyz(300.0, 0.0, 0.0).with_scale(Vec3::splat(6.0)),
-            animation_indices,
-            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-            Pickable::default(),
-        ))
-        .observe(check_click);
+    // for entity in loading_query.iter() {
+    //     commands.entity(entity).despawn();
+    // }
 }
