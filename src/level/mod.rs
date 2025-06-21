@@ -14,37 +14,8 @@ impl Plugin for LevelPlugin {
     }
 }
 
-fn setup_level(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    // loading_query: Query<Entity, With<LoadingTag>>,
-) {
-    // Adapted from:
-    // https://bevy.org/examples/picking/sprite-picking/
-    let image = asset_server.load("bevy/rpg/chars/gabe/gabe-idle-run.png");
-    let layout = TextureAtlasLayout::from_grid(UVec2::new(24, 24), 7, 1, None, None);
-    let texture_atlas_layout_handle = texture_atlas_layouts.add(layout);
-    // Use only the subset of sprites in the sheet that make up the run animation
-    let animation_indices = AnimationIndices { first: 1, last: 6 };
-    commands
-        .spawn((
-            WorkerTag,
-            WorkerState::Passive,
-            Sprite::from_atlas_image(
-                image,
-                TextureAtlas {
-                    layout: texture_atlas_layout_handle,
-                    index: animation_indices.first,
-                },
-            ),
-            Transform::from_xyz(300.0, 0.0, 0.0).with_scale(Vec3::splat(6.0)),
-            animation_indices,
-            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-            Pickable::default(),
-        ))
-        .observe(check_click);
-}
+#[derive(Component)]
+struct BarrelTag;
 
 #[derive(Component)]
 struct WorkerTag;
@@ -62,6 +33,49 @@ struct AnimationTimer(Timer);
 enum WorkerState {
     Active,
     Passive,
+}
+
+fn setup_level(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    // loading_query: Query<Entity, With<LoadingTag>>,
+) {
+    let barrel = asset_server.load("bevy/rpg/props/generic-rpg-barrel01.png");
+    commands
+        .spawn((
+            BarrelTag,
+            Sprite {
+                image: barrel,
+                ..default()
+            },
+            Transform::from_scale(Vec3::splat(6.0)),
+            Pickable::default(),
+        ))
+        .observe(check_click);
+
+    // Adapted from:
+    // https://bevy.org/examples/picking/sprite-picking/
+    let gabe = asset_server.load("bevy/rpg/chars/gabe/gabe-idle-run.png");
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(24, 24), 7, 1, None, None);
+    let texture_atlas_layout_handle = texture_atlas_layouts.add(layout);
+    // Use only the subset of sprites in the sheet that make up the run animation
+    let animation_indices = AnimationIndices { first: 1, last: 6 };
+    commands.spawn((
+        WorkerTag,
+        WorkerState::Passive,
+        Sprite::from_atlas_image(
+            gabe,
+            TextureAtlas {
+                layout: texture_atlas_layout_handle,
+                index: animation_indices.first,
+            },
+        ),
+        Transform::from_xyz(-300.0, 0.0, 0.0).with_scale(Vec3::splat(6.0)),
+        animation_indices,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        Pickable::default(),
+    ));
 }
 
 fn check_click(_click: Trigger<Pointer<Pressed>>, mut query: Query<&mut WorkerState>) {
