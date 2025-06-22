@@ -2,7 +2,7 @@
 // mod time_management;
 
 use crate::base::AppState;
-use bevy::{prelude::*, render::view::visibility};
+use bevy::{pbr::resources, prelude::*, render::view::visibility};
 
 pub struct LevelPlugin;
 
@@ -18,6 +18,8 @@ impl Plugin for LevelPlugin {
                     show_worker,
                     move_worker,
                     animate_worker,
+                    complete_task,
+                    update_home,
                 )
                     .chain()
                     .run_if(in_state(AppState::Level)),
@@ -25,30 +27,44 @@ impl Plugin for LevelPlugin {
     }
 }
 
-#[derive(Component)]
-struct Resource;
+// TODO: add time comppnent
+// when completing tasks
+#[derive(Component, Copy, Clone)]
+enum Resource {
+    Food(u32),
+    // Wood(u32),
+    // Gold(u32),
+}
 
+// #[derive(Component)]
+// struct Target<T>(T);
+
+// TODO: add time component!
 #[derive(Event, Copy, Clone)]
 struct WorkerRequest {
+    resources: Option<Resource>,
     position: Vec3,
+}
+
+impl WorkerRequest {
+    fn new(resources: Option<Resource>, position: Vec3) -> WorkerRequest {
+        WorkerRequest {
+            resources,
+            position,
+        }
+    }
 }
 
 #[derive(Component, Copy, Clone)]
 struct WorkerTask {
+    resources: Option<Resource>,
     position: Vec3,
-}
-
-impl From<Transform> for WorkerRequest {
-    fn from(item: Transform) -> WorkerRequest {
-        WorkerRequest {
-            position: item.translation,
-        }
-    }
 }
 
 impl From<WorkerRequest> for WorkerTask {
     fn from(item: WorkerRequest) -> WorkerTask {
         WorkerTask {
+            resources: item.resources,
             position: item.position,
         }
     }
@@ -84,7 +100,7 @@ fn setup_level(
     let barrel = asset_server.load("bevy/rpg/props/generic-rpg-barrel01.png");
     commands
         .spawn((
-            Resource,
+            Resource::Food(3),
             Sprite {
                 image: barrel,
                 ..default()
@@ -137,8 +153,15 @@ fn check_click(
     mut resource_queue: EventWriter<WorkerRequest>,
     query: Query<(&Resource, &mut Transform)>,
 ) {
-    if let Some((_, transform)) = query.iter().next() {
-        resource_queue.write(WorkerRequest::from(*transform));
+    // TODO: do we give worker resource type?
+    // Maybe we want it to be hidden until the worker returns.
+    // If we only care about the player *not* seeing
+    // the resource (e.g., cloudly level/mechanic),
+    // then we can store it internally in the resource.
+    // If the worker prepares ahead for a specific resource,
+    // however, *then* we may need to refactor.
+    if let Some((resource, transform)) = query.iter().next() {
+        resource_queue.write(WorkerRequest::new(Some(*resource), transform.translation));
     }
 }
 
@@ -169,6 +192,19 @@ fn show_worker(mut query: Query<(&WorkerState, &mut Visibility)>) {
     }
 }
 
+// TODO: add resources to home!
+fn update_home(mut query: Query<(&WorkerState, &mut Sprite, &mut Visibility)>) {
+    if let Some((state, mut sprite, mut visibility)) = query.iter_mut().next()
+        && let WorkerState::AtHome = *state
+    {
+        *visibility = Visibility::Hidden;
+        // TODO: setup orientation
+        // for general paths.
+        sprite.flip_x = false;
+        sprite.flip_y = false;
+    }
+}
+
 fn move_worker(
     mut worker_query: Query<(&mut Transform, &mut WorkerState, &WorkerTask)>,
     home_query: Query<(&HomeTag, &Transform), Without<WorkerState>>,
@@ -178,6 +214,7 @@ fn move_worker(
 
         // TODO: use path following here!
         match *state {
+            // TODO: refactor with a Target struct!
             WorkerState::ToTarget => {
                 if transform.translation == task.position {
                     // TODO: update resource that
@@ -199,6 +236,15 @@ fn move_worker(
                 }
             }
             _ => {}
+        }
+    }
+}
+
+fn complete_task(mut workers: Query<(&mut WorkerState, &WorkerTask)>, resource: Query<&Resource>) {
+    for (mut worker_state, worker_task) in &mut workers {
+        // TODO: actually use time component!
+        if let WorkerState::AtTarget = *worker_state {
+            *worker_state = WorkerState::ToHome;
         }
     }
 }
