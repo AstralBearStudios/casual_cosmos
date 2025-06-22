@@ -26,7 +26,7 @@ impl Plugin for LevelPlugin {
 }
 
 #[derive(Component)]
-struct BarrelTag;
+struct Resource;
 
 #[derive(Event, Copy, Clone)]
 struct WorkerRequest {
@@ -60,8 +60,9 @@ struct HomeTag;
 #[derive(Component)]
 enum WorkerState {
     AtHome,
-    ReturningHome,
-    Active,
+    ToHome,
+    ToTarget,
+    AtTarget,
     Passive,
 }
 
@@ -83,7 +84,7 @@ fn setup_level(
     let barrel = asset_server.load("bevy/rpg/props/generic-rpg-barrel01.png");
     commands
         .spawn((
-            BarrelTag,
+            Resource,
             Sprite {
                 image: barrel,
                 ..default()
@@ -134,7 +135,7 @@ fn setup_level(
 fn check_click(
     _click: Trigger<Pointer<Pressed>>,
     mut resource_queue: EventWriter<WorkerRequest>,
-    query: Query<(&BarrelTag, &mut Transform)>,
+    query: Query<(&Resource, &mut Transform)>,
 ) {
     if let Some((_, transform)) = query.iter().next() {
         resource_queue.write(WorkerRequest::from(*transform));
@@ -150,7 +151,7 @@ fn activate_available_worker(
         for (worker_id, mut worker_state) in &mut workers {
             match *worker_state {
                 WorkerState::AtHome | WorkerState::Passive => {
-                    *worker_state = WorkerState::Active;
+                    *worker_state = WorkerState::ToTarget;
                     commands.entity(worker_id).insert(WorkerTask::from(*task));
                     break;
                 }
@@ -161,28 +162,43 @@ fn activate_available_worker(
 }
 
 fn show_worker(mut query: Query<(&WorkerState, &mut Visibility)>) {
-    if let Some((WorkerState::Active | WorkerState::Passive, mut visibility)) =
+    if let Some((WorkerState::ToTarget | WorkerState::Passive, mut visibility)) =
         query.iter_mut().next()
     {
         *visibility = Visibility::Visible
     }
 }
 
-fn move_worker(mut query: Query<(&mut Transform, &mut WorkerState, &WorkerTask)>) {
-    if let Some((mut transform, mut state, task)) = query.iter_mut().next() {
+fn move_worker(
+    mut worker_query: Query<(&mut Transform, &mut WorkerState, &WorkerTask)>,
+    home_query: Query<(&HomeTag, &Transform), Without<WorkerState>>,
+) {
+    if let Some((mut transform, mut state, task)) = worker_query.iter_mut().next() {
+        let (_, home_transform) = home_query.iter().next().unwrap();
+
         // TODO: use path following here!
-        if let WorkerState::ReturningHome = *state {
-            transform.translation.x -= 4.;
-            transform.translation.y -= 0.;
-        } else if transform.translation.x == task.position.x {
-            // TODO: customize from game options!
-            // Could create different systems here!
-            *state = WorkerState::ReturningHome;
-            transform.translation.x -= 4.;
-            transform.translation.y -= 0.;
-        } else {
-            transform.translation.x += 4.;
-            transform.translation.y += 0.;
+        match *state {
+            WorkerState::ToTarget => {
+                if transform.translation == task.position {
+                    // TODO: update resource that
+                    // it's being worked on!
+                    *state = WorkerState::AtTarget;
+                } else {
+                    transform.translation.x += 4.;
+                    transform.translation.y += 0.;
+                }
+            }
+            WorkerState::ToHome => {
+                if transform.translation == home_transform.translation {
+                    // TODO: update resource that
+                    // it's being worked on!
+                    *state = WorkerState::AtHome;
+                } else {
+                    transform.translation.x -= 4.;
+                    transform.translation.y -= 0.;
+                }
+            }
+            _ => {}
         }
     }
 }
@@ -205,7 +221,7 @@ fn animate_worker(
 
         match worker_state {
             WorkerState::Passive => texture_atlas.index = 0,
-            WorkerState::Active => {
+            WorkerState::ToTarget => {
                 if timer.just_finished() {
                     texture_atlas.index = if texture_atlas.index == indices.last {
                         indices.first
@@ -214,6 +230,18 @@ fn animate_worker(
                     };
                 }
             }
+            WorkerState::ToHome => {
+                if timer.just_finished() {
+                    texture_atlas.index = if texture_atlas.index == indices.last {
+                        indices.first
+                    } else {
+                        texture_atlas.index + 1
+                    };
+                }
+
+                sprite.flip_x = true;
+            }
+
             _ => (),
         }
     }
