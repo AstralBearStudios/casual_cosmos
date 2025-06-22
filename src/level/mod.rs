@@ -169,15 +169,19 @@ fn show_worker(mut query: Query<(&WorkerState, &mut Visibility)>) {
 }
 
 fn move_worker(mut query: Query<(&mut Transform, &mut WorkerState, &WorkerTask)>) {
-    if let Some((mut transform, state, task)) = query.iter_mut().next() {
+    if let Some((mut transform, mut state, task)) = query.iter_mut().next() {
         // TODO: use path following here!
-        if transform.translation == task.position
-            && let WorkerState::ReturningHome = *state
-        {
-            transform.translation.x -= 1.;
+        if let WorkerState::ReturningHome = *state {
+            transform.translation.x -= 4.;
+            transform.translation.y -= 0.;
+        } else if transform.translation.x == task.position.x {
+            // TODO: customize from game options!
+            // Could create different systems here!
+            *state = WorkerState::ReturningHome;
+            transform.translation.x -= 4.;
             transform.translation.y -= 0.;
         } else {
-            transform.translation.x += 1.;
+            transform.translation.x += 4.;
             transform.translation.y += 0.;
         }
     }
