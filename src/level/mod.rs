@@ -31,6 +31,7 @@ struct AnimationTimer(Timer);
 
 #[derive(Component)]
 enum WorkerState {
+    AtHome,
     Active,
     Passive,
 }
@@ -54,6 +55,20 @@ fn setup_level(
         ))
         .observe(check_click);
 
+    let home = asset_server.load("bevy/rpg/chars/vendor/generic-rpg-vendor.png");
+    let home_transform = Transform::from_xyz(-300.0, 0.0, 0.0);
+    commands
+        .spawn((
+            BarrelTag,
+            Sprite {
+                image: home,
+                ..default()
+            },
+            home_transform.with_scale(Vec3::splat(6.0)),
+            // Pickable::default(),
+        ))
+        .observe(check_click);
+
     // Adapted from:
     // https://bevy.org/examples/picking/sprite-picking/
     let gabe = asset_server.load("bevy/rpg/chars/gabe/gabe-idle-run.png");
@@ -71,7 +86,8 @@ fn setup_level(
                 index: animation_indices.first,
             },
         ),
-        Transform::from_xyz(-300.0, 0.0, 0.0).with_scale(Vec3::splat(6.0)),
+        Visibility::Hidden,
+        home_transform.with_scale(Vec3::splat(6.0)),
         animation_indices,
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         Pickable::default(),
@@ -81,8 +97,8 @@ fn setup_level(
 fn check_click(_click: Trigger<Pointer<Pressed>>, mut query: Query<&mut WorkerState>) {
     for mut state in &mut query {
         match *state {
-            WorkerState::Passive => *state = WorkerState::Active,
-            WorkerState::Active => *state = WorkerState::Passive,
+            WorkerState::AtHome | WorkerState::Passive => *state = WorkerState::Active,
+            _ => (),
         }
     }
 }
@@ -114,6 +130,7 @@ fn animate_sprite(
                     };
                 }
             }
+            _ => (),
         }
     }
 }
